@@ -1,8 +1,10 @@
 # isc-proposal
 
-[![build-status](https://github.com/YOUR-USERNAME/YOUR-REPOSITORY/actions/workflows/publish-proposal.yaml/badge.svg)](https://github.com/YOUR-USERNAME/YOUR-REPOSITORY/actions/workflows/publish-proposal.yaml)
+[![build-status](https://github.com/VisruthSK/foil-ISC-2026/actions/workflows/publish-proposal.yaml/badge.svg)](https://github.com/VisruthSK/foil-ISC-2026/actions/workflows/publish-proposal.yaml)
 
 This repository is a boilerplate repository that helps you prepare your proposal for the [R Consortium](https://www.r-consortium.org).
+
+<!-- TODO: update README -->
 
 ## Background
 
@@ -59,7 +61,7 @@ This is a boilerplate repository that you will need to fork, title appropriately
 
 This repository comes with a GitHub actions setup to automatically render your proposal to HTML and PDF formats.  To take advantage of it, you must publish the proposal to GitHub pages interactively the first time.
 
-From the command line, run `quarto publish gh-pages isc-proposal.qmd`.  After this, the GitHub action should run every time you push a commit to the main branch. Your rendered proposal can then be viewed at https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/
+From the command line, run `quarto publish gh-pages isc-proposal.qmd`.  After this, the GitHub action should run every time you push a commit to the main branch. Your rendered proposal can then be viewed at https://VisruthSK.github.io/foil-ISC-2026/
 
 ## License
 

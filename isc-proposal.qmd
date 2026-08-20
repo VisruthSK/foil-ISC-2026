@@ -1,25 +1,6 @@
 ---
-title: "Proposal Title"
-author:
-  - name: Annie Easley
-    orcid: 5555-5555-5555-5555
-    affiliations:
-      - "Lewis Research Center, National Aeronautics and Space Administration"
-
-date: today
-date-format: iso
-format:
-  html:
-    embed-resources: true
-  hikmah-pdf:
-    geometry:
-      - left=1.25in
-      - right=1.25in
-bibliography: references.bib
+title: "`foil`: paired performance benchmarking for R packages"
 ---
-
-_This template was last revised on 2026-03-24._
-
 
 {{< include proposal/00-exec-summary.qmd >}}
 
