@@ -9,14 +9,24 @@ thorough understanding going in of what the risks are to delivery
 What does success look like?
 -->
 
+The project is complete when `foil` ships Linux and Windows process-tree memory backends, prebuilt binaries requiring no Rust toolchain, and an R package that can install or invoke a `foil` executable and read its results. The release will also include a machine-readable result format, `foil init r-package`, documented R package GitHub Actions workflows, and extended documentation on the software and methodology.
+
+In essence, "done" is when `foil` measures both runtime and memory on Linux and Windows and is easy to set up with GitHub Actions for a typical R package.
+
 ## Measuring success
 <!--
 How will we know when success is achieved, what markers can we use
 along the way
 -->
 
+Automated tests will verify the Linux and Windows memory backends and run them on controlled tasks to ensure measurement works. Benchmarks will track overhead introduced by `foil`, while model diagnostics will expose repetition-position and run-order effects. Release checks will verify that prebuilt binaries can be installed without a Rust toolchain, that the R package can locate or install a compatible `foil` executable, run benchmarks, and read the machine-readable results, and that `foil init r-package` produces a working GitHub Actions workflow. 
+
+All results will remain public on GitHub.
+
 ## Future work
 <!--
 How could this be extended / developed in the future by yourself
 and/or the community in general?
 -->
+
+Potential future work includes process-tree memory on macOS, parallel benchmark execution, additional statistical models, historical comparisons, and a tool similar to `git bayesect` for locating performance regressions across commits [@bayesect].

@@ -12,6 +12,9 @@ important because projects need to get up and running quickly.
  - [ ] Reporting framework
 -->
 
+Development will build on the existing `foil` CLI, which already performs randomized paired runtime comparisons between Git revisions and reports the revision effect with uncertainty; the funded work adds process-tree memory measurement, prebuilt binaries, and an R package. Development will continue in the existing public [GitHub repository](https://github.com/VisruthSK/foil). The existing code is flexible and was built with support for memory measurement in mind. Work will start immediately by evaluating cgroup dependencies (e.g., [`cgroups-rs`](https://crates.io/crates/cgroups-rs), [`cgroups-fs`](https://crates.io/crates/cgroups-fs), [`cgroup-memory`](https://crates.io/crates/cgroup-memory), or sticking with the hand-rolled interface) and implementation of memory measurement.
+
+`foil` will remain dual-licensed under MIT OR Apache-2.0; the R package will use BSD-3. Development, issue tracking, releases, milestone summaries, and scope changes will remain public, with progress reported to the ISC at the midpoint and completion.
 
 ## Technical delivery
 <!--
@@ -21,6 +24,14 @@ provide at least a high-level description of the implementation.
 Including target dates is really important as you need to be committed
 and the ISC need to have a means of tracking delivery
 -->
+
+* By February 28, 2027: finalize the process-tree memory boundary and result schema; implement the Linux cgroup v2 backend; add controlled process-tree fixtures and measurement tests.
+* By March 31, 2027: publish prebuilt `foil` binaries and installers; implement the R package for binary installation or discovery, compatibility checks, benchmark invocation, and result import; add `foil init r-package`, a GitHub Actions example, and compact terminal interval plots.
+* By April 30, 2027: improve diagnostics for repetition-position and run-order effects; measure the overhead introduced by `foil`, reduce avoidable overhead, and add benchmarks to track it.
+* By May 31, 2027: implement the Windows Job Object backend and add containment tests.
+* By June 30, 2027: resolve release blockers, complete methodology documentation, stabilize the result schema and R interface, and publish stable releases of `foil` and the R package.
+
+Process-tree memory on macOS, parallel execution, and additional inference engines are outside the funded scope.
 
 ## Other aspects
 
@@ -37,6 +48,10 @@ to be shared quarterly on the R Consortium blog.
  - [ ] UseR!
  - [ ] ISC meetings
 -->
+
+Code, documentation, issue tracking, and releases will remain public on GitHub.
+
+An announcement post will invite maintainers to test early releases. Milestone posts will keep track of progress, and longer form midpoint and final posts will report the R workflow, process-tree memory work, benchmark overhead, and known limitations. Updates will be published on [visruth.com](https://visruth.com), offered to the R Consortium blog, and submitted to R Weekly. Material scope changes will also be reported at ISC meetings.
 
 ## Budget & funding plan
 
@@ -58,3 +73,13 @@ to the project and the project period. The ISC reserves the right to vet
 how funds are used for each project separately. If in doubt, please reach
 out to us.
 -->
+
+Requested funding is $10,000 USD for development labor. Under partial funding, Windows memory support will be cut first.
+
+| Milestone | Target | Expected outcome | Budget allocation |
+|---|---|---|---:|
+| Linux process-tree memory | February 28, 2027 | Memory contract and result schema; Linux cgroup v2 backend; controlled process-tree fixtures | $2,500 |
+| Distribution and R integration | March 31, 2027 | Prebuilt releases and installers; R package with binary installation/discovery, compatibility checks, invocation, and result import; initializer and CI example | $2,500 |
+| Benchmark overhead and model diagnostics | April 30, 2027 | Measured and reduced `foil` overhead; regression benchmarks and improved model diagnostics | $1,500 |
+| Windows process-tree memory | May 31, 2027 | Windows Job Object backend with containment tests | $2,500 |
+| Stabilization and release | June 30, 2027 | Stable CLI and R-package releases, methodology documentation, stabilized interfaces, and release blockers resolved | $1,000 |

@@ -17,6 +17,12 @@ section.
 Include concrete actions you will take and estimated timeline.
 -->
 
+`foil` is designed to evaluate whether a change made software slower or more memory-hungry---most naturally in the form of comparing the performance of a feature branch to `main`. The existing CLI checks out clean baseline and candidate revisions, runs them as randomized pairs in the same job, preserves those pairs in inference, adjusts for repetition position and execution order, and reports the revision effect with uncertainty. This makes useful comparison possible on ordinary development machines and CI runners without a historical benchmark database or dedicated benchmarking hardware.
+
+The funded work adds process-tree peak-memory measurement, prebuilt binaries, and an R package. Process-tree memory matters for R because substantial workloads execute in C, C++, Fortran, Rust, BLAS, OpenMP, or child processes, outside R allocation accounting. `foil` will measure the benchmark process and its contained descendants while retaining native Linux and Windows metric semantics. Amongst the tools reviewed in @sec-existing-tools, none combines arbitrary Git-revision commands, randomized paired measurement on ordinary CI runners, explicit repetition-position and execution-order adjustment, uncertainty on the revision effect, and OS process-tree peak memory.
+
+From January through June 2027, the project will deliver Linux memory and the result schema, distribution and R integration, reduce `foil` overhead and present model diagnostics, Windows memory, and stable documented releases.
+
 ## Detail
 <!--
 Go into more detail about the specifics of the project and how it delivers
@@ -25,11 +31,27 @@ against the problem.
 Depending on project type the detail section should include:
 -->
 
+### Model
+
+`foil` models each paired repetition as a shared measurement level plus a candidate-minus-baseline effect. Both the shared level and the revision effect may vary with repetition position and run order, allowing the model to account for drift and order effects while estimating the adjusted difference between revisions. Pairing also accounts for additive disturbances shared by the baseline and candidate measurements. @sec-app-model gives the full model. `foil` reports the estimated revision effect together with its uncertainty rather than reducing the result to a binary significance decision [@gelmanStern2006; @mcshaneAbandon2019].
+
+### Benchmark process-tree memory
+
+Memory usage will be measured using OS facilities that track maximum memory usage across the benchmark process and its descendants. This captures memory used by native libraries, threads, and child processes. The exact semantics differ by OS: Linux will use cgroups, while Windows will use Job Objects. Memory measurements from Windows and Linux runs are not directly comparable because each platform measures a subtly different quantity. Linux will report per-invocation cgroup v2 `memory.peak`; Windows will report Job Object `PeakJobMemoryUsed` [@linuxCgroupV2; @windowsJobMemory]. @sec-app-memory goes into more detail.
+
+### R integration and distribution
+
+The R package will be released on CRAN and the multiverse. It will install or locate a `foil` executable and provide a minimal R interface to `foil` to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust CLI will remain responsible for the core mechanisms, but the package will allow users to interact with it through R.
+
+The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases using `dist`, with `cargo binstall` support. `foil init r-package` will write a starter `foil.toml`, R benchmark entry point, and GitHub Actions workflow.
+
 ### Minimum Viable Product
 
 <!--
 What is the smallest thing you can build that delivers value to your users?
 -->
+
+The MVP is a complete Linux workflow for measuring a performance change---including memory---and making the result available in R. A user can install `foil` without a Rust toolchain, compare two Git revisions locally or in CI, measure runtime and process-tree peak memory, and obtain an adjusted revision effect with uncertainty. The R package can install or locate a compatible `foil` executable, run benchmarks, and import the resulting measurements and posterior draws. A generated project configuration and GitHub Actions workflow will reduce setup cost.
 
 ### Architecture
 
@@ -37,14 +59,24 @@ What is the smallest thing you can build that delivers value to your users?
 What does the high-level architecture look like?
 -->
 
+The Rust CLI resolves revisions, creates clean worktrees, constructs the randomized paired schedule, runs benchmark commands, records observations, and performs inference. The benchmark command itself remains user-defined, so package-specific setup and the workload being measured stay under the maintainer's control. Runtime and memory measurements enter the same paired schedule and inference pipeline, while platform-specific backends handle the details of process containment and memory accounting. `foil` fits a model to estimate the revision effect and performs a Bayesian bootstrap to quantify uncertainty without specifying an error distribution [@rubinBayesianBootstrap1981].
+
+The CLI writes measurements and inference results out to a machine-readable result format. The R package sits on top of this interface: it installs or locates a compatible executable, invokes `foil`, and reads the resulting measurements and posterior output. Benchmark orchestration, measurement, and statistical inference therefore have a single implementation in Rust, whether `foil` is used directly from the command line, in CI, or through R.
+
 ### Assumptions
 
 <!--
 What assumptions are you making that, if proven false, would invalidate the project?
 -->
 
+Linux process-tree memory requires usable cgroup v2 access, and Windows memory requires Job Object containment If access is unavailable, `foil` reports the metric as unsupported.
+
+`foil` deliberately makes few modelling assumptions: drift and run-order effects are linear, paired repetitions are independent after accounting for those effects, and disturbances shared by baseline and candidate are additive.
+
 ### External dependencies
 
 <!--
 What external dependencies does the project have (e.g. libraries, services, other projects, etc.)?
 -->
+
+`foil` depends on Git. Process-tree memory additionally requires cgroup v2 on Linux or Job Objects on Windows.

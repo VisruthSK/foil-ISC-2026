@@ -4,3 +4,15 @@
 This section provides a condensed view of the entire proposal, one page long.
 It should be a comprehensive high-level overview that captures the essence of the proposal, including its goals, methods, expected outcomes, deliverables, and budget.
 -->
+
+R package maintainers need to detect runtime and memory regressions before changes are merged or released, but ordinary development machines and CI runners are noisy and R-level memory accounting does not capture the full footprint of workloads that execute in native code or child processes. [`foil`](https://github.com/VisruthSK/foil) is a Rust CLI that addresses the revision-comparison problem by running clean baseline and candidate revisions as randomized pairs on the same machine, retaining those pairs in inference, adjusting for repetition position and execution order, and reporting the revision effect with uncertainty.
+
+The funded work will extend the existing runtime measurement with process-tree peak-memory measurement on Linux and Windows, binary distribution, and a strong R integration layer. Linux will use cgroup memory tracking; Windows will use Job Objects. This approach allows for measuring memory used by native libraries, compiled extensions, threads, and contained child processes.
+
+The project will publish prebuilt `foil` binaries for Linux, macOS, and Windows, together with an R package for running benchmarks and analyzing results. `foil` will also support opinionated initializations such as `foil init r-package`, which will write a template benchmark configuration and GitHub Actions workflow. Dependency installation, compilation, and other project-specific setup remain under the maintainer's control. Runtime comparison already exists and runs on macOS, Linux, and Windows---while memory measurement targets Linux and Windows.
+
+`foil` will let R package maintainers run revision-level runtime and memory comparisons on ordinary development machines and CI runners without maintaining dedicated benchmark hardware.
+
+Work is scheduled from January through June 2027, with Linux memory measurement and the result schema first, followed by distribution and R integration, benchmark overhead and model diagnostics, Windows memory measurement, and release stabilization.
+
+Requested funding is $10,000 USD for development labor across five milestones.

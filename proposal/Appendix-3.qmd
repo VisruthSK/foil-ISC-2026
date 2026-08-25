@@ -1,0 +1,122 @@
+# Appendix C: Statistical model {#sec-app-model}
+
+For repetition $i$, let $B_i$ and $C_i$ be the baseline and candidate measurements, $r_i$ the centered repetition position, and $o_i \in \{-1,+1\}$ the run-order contrast indicating which branch was run first. Let $z_B=-1$ and $z_C=+1$ identify the baseline and candidate measurements within each pair.
+
+A simple model for the two measurements is
+
+$$
+y_{ik}
+=
+\mu
++
+\frac{z_k}{2}
+\left(
+\Delta+\Delta_r r_i+\Delta_o o_i
+\right)
++
+\varepsilon_{ik}.
+$$
+
+Here, $\mu$ is the midpoint of the baseline and candidate measurements. The $\Delta$ coefficients describe the candidate-minus-baseline effect. $\Delta$ is the effect at $r=o=0$, while $\Delta_r$ and $\Delta_o$ describe how that effect changes with repetition position and run order.
+
+The $1/2$ makes the $\Delta$ coefficients direct candidate-minus-baseline contrasts. In particular,
+
+$$
+E[C_i-B_i]
+=
+\Delta+\Delta_r r_i+\Delta_o o_i.
+$$
+
+The full model also allows the level shared by the baseline and candidate to vary with repetition position and run order:
+
+$$
+y_{ik}
+=
+\mu+\mu_r r_i+\mu_o o_i
++
+\frac{z_k}{2}
+\left(
+\Delta+\Delta_r r_i+\Delta_o o_i
+\right)
++
+\varepsilon_{ik}.
+$$
+
+The $\mu_r$ and $\mu_o$ coefficients are nuisance terms. They account for changes that affect the baseline and candidate equally, while the corresponding $\Delta$ coefficients describe changes in the candidate-minus-baseline effect.
+
+`foil` fits this model through its equivalent midpoint and difference regressions. Define
+
+$$
+m_i=\frac{B_i+C_i}{2},
+\qquad
+d_i=C_i-B_i.
+$$
+
+Then
+
+$$
+m_i
+=
+\mu+\mu_r r_i+\mu_o o_i+\varepsilon_i^{(m)},
+$$
+
+and
+
+$$
+d_i
+=
+\Delta+\Delta_r r_i+\Delta_o o_i+\varepsilon_i^{(d)}.
+$$
+
+Thus the midpoint regression estimates the shared level, while the difference regression estimates the candidate-minus-baseline effect. A disturbance shared by both measurements in a pair cancels from $d_i$.
+
+For each Bayesian-bootstrap draw, `foil` samples one weight for each pair,
+
+$$
+w_i \sim \operatorname{Exp}(1),
+$$
+
+and fits both regressions by weighted least squares using the same weights. Normalizing these weights gives
+
+$$
+\left(
+\frac{w_1}{\sum_j w_j},
+\dots,
+\frac{w_n}{\sum_j w_j}
+\right)
+\sim
+\operatorname{Dirichlet}(1,\dots,1),
+$$
+
+so this is the standard Bayesian bootstrap [@rubinBayesianBootstrap1981]. Using the same pair weights for both regressions preserves their joint uncertainty.
+
+The fitted intercepts give the adjusted baseline and candidate values at $r=o=0$:
+
+$$
+\mu_B
+=
+\hat{\mu}-\frac{\hat{\Delta}}{2},
+\qquad
+\mu_C
+=
+\hat{\mu}+\frac{\hat{\Delta}}{2}.
+$$
+Shrinkage, when requested, acts only on the candidate-minus-baseline effect. The parameter $\lambda$ represents a prior count of zero difference pseudo-observations. For $\lambda=0$, the model above is unchanged. Since each observed pair has expected weight $E[w_i]=1$ while the pseudo-observation has expected weight $E[g]=\lambda$, $\lambda$ can be interpreted as the effective prior sample size for zero difference. For $\lambda>0$, each Bayesian-bootstrap draw additionally samples
+
+$$
+g \sim \operatorname{Gamma}(\lambda,1)
+$$
+
+and adds a zero difference pseudo-observation at $r=o=0$ with weight $g$. Equivalently, the difference regression minimizes
+
+$$
+\sum_i
+w_i
+\left(
+d_i-\Delta-\Delta_r r_i-\Delta_o o_i
+\right)^2
++
+g\Delta^2
+$$
+
+while the midpoint regression is unaffected.

@@ -1,0 +1,13 @@
+# Appendix B: Process-tree memory semantics {#sec-app-memory}
+
+## Measurement boundary
+
+A measured invocation begins with the benchmark command and includes descendants created during that invocation. `foil` setup and teardown and any pre-existing processes remain outside the boundary. Native libraries and threads contribute through the measured process; parallel workers created as child processes contribute when they remain inside the platform containment boundary. Linux and Windows use different OS mechanisms to implement the same process-tree measurement boundary.
+
+The posterior and summary code is already generic over the measured metric and can carry peak-memory values; benchmark runs currently record elapsed time only. The funded work adds the OS backends specified below.
+
+## Implementation details
+
+For each measured invocation on Linux, `foil` will start the benchmark in a new cgroup, and read `memory.peak` after the command and measured descendants complete. Linux defines `memory.peak` as the maximum memory usage recorded for a cgroup and its descendants [@linuxCgroupV2]. If the required cgroup v2 access is unavailable, the metric is unsupported.
+
+On Windows, `foil` will associate the benchmark with a Job Object before the measured workload proceeds and will report `PeakJobMemoryUsed` [@windowsJobMemory] after the command and contained descendants complete. Child processes normally inherit job membership; nested jobs and breakaway settings can change containment [@windowsJobObjects]. Again, if unsupported, `foil` will only record runtime.

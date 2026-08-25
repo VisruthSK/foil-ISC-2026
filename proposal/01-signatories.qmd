@@ -18,15 +18,14 @@ to the project. Include public artifacts such as code repositories to
 show their tack record.
 -->
 
-## Contributors
-<!--
-Who are the people who have actively helped with this proposal but
-won't necessarily be on the core project team later?
--->
+Visruth Srimath Kandali is the sole developer of [`foil`](https://github.com/VisruthSK/foil). He is a Master's student in Statistics at California Polytechnic State University, San Luis Obispo, and a member of the Stan development team. His open-source work includes sustained development of [`loo`](https://github.com/stan-dev/loo) as a Google Summer of Code contributor in 2025 and 2026. Relevant contributions to `loo` include testing and package infrastructure modernization and `touchstone`-based performance benchmarks. He also develops R packages such as [`bootstrapper`](https://github.com/VisruthSK/bootstrapper), an opinionated package for setting up package infrastructure and CI workflows.
+
+More information is available at [visruth.com](https://www.visruth.com).
 
 ## Consulted
 <!--
 Who has been given the opportunity to provide feedback on the
 proposal?
 -->
-
+<!-- TODO: ASK PEOPLE -->
+<!-- ASK JONAH, TYSON, BODWIN, ROBINSON?, AKI?, FLORENCE, JOSIAH PARRY?, WILL LANDAU, MAX KUHN, STAN PEOPLE? ASK ON NET TOO -->

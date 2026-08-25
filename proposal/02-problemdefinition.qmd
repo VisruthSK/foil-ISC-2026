@@ -1,10 +1,5 @@
----
-bibliography: references.bib
----
-
 # The Problem
 
-```{=html}
 <!--
 Outlining the issue / weak point / problem to be solved by this
 proposal. This should be a compelling section that sets the reader up
@@ -19,6 +14,11 @@ It is important to cover:
  - [ ] Brief summary of existing work and previous attempts (e.g., relevant R packages)
  - [ ] If proposing changes to R itself: letter of support from R Core member
 -->
-```
 
-An example in-text citation [@wickham2016].
+Performance regressions can pass unit tests and reach users as slower code or higher memory use. R package maintainers therefore need to be able to determine whether a specific change meaningfully altered performance. On ordinary development machines and CI runners, however, runtime measurements are noisy enough that revision-level changes can be difficult to distinguish from normal variation. One way to reduce that noise is to measure baseline and candidate revisions on the same machine, which reduces machine-to-machine variation [@laaberCloud2019].
+
+Memory measurement presents another problem. Many R packages perform substantial work in C, C++, Fortran, Rust, BLAS, OpenMP, or child processes, so R-level allocation accounting does not capture all memory used by the benchmarked workload. Maintainers of packages with compiled or parallelized workloads can therefore miss memory regressions even if R-level allocation measurements appear unchanged. Reliable revision-level runtime and memory comparisons would let maintainers detect and investigate these regressions before they reach users, without requiring dedicated benchmarking hardware.
+
+Existing R tools address parts of this problem. `bench` measures runtime and R allocation behavior [@bench], `cross` runs expressions across package versions or Git branches [@cross], and `atime` compares time and memory across versions and revisions [@atime; @atimePaper]. `touchstone` comes closest to a paired revision experiment [@touchstone], and an August 19, 2026 search found `touchstone` configuration in 35 public repositories across 22 owners. However, these tools (as reviewed in @sec-existing-tools) do not combine paired revision-level inference with memory measurement that includes work performed outside R's allocator. 
+
+Existing tools also vary in how they treat uncertainty. Some report point estimates or intervals without preserving the paired design in inference, while others use significance tests to classify a change. A core principle of `foil` is to preserve uncertainty rather than collapse it into a changed/unchanged decision. `foil` therefore centers on reducing and quantifying uncertainty in estimating the revision effect, leaving the practical importance of the change to the maintainer [@gelmanStern2006; @mcshaneAbandon2019].

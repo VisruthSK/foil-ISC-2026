@@ -1,0 +1,39 @@
+# Appendix A: Existing tools and evidence of demand {#sec-existing-tools}
+
+## Evidence of demand
+
+The R community has previously invested directly in revision-level performance testing. `Rperform`, developed through Google Summer of Code projects in 2015, 2016, and 2022, was designed to track runtime and memory across Git revisions and branches and integrate performance testing into package CI. `Rperform` is no longer actively developed, but this repeated investment shows interest in detecting performance changes during R package development [@Rperform].
+
+An August 19, 2026 GitHub search for `touchstone` in `.Rbuildignore` files returned 35 public repositories across 22 owners after excluding repositories from the `touchstone` authors and the grant author. The repositories span statistical computing, epidemiology, Stan, graph analysis, simulation, and other R projects. Further, `data.table` uses `atime` to investigate timing and memory differences [@dataTable; @atime; @atimePaper]. Looking beyond R, the `curl` project maintains dedicated performance-regression infrastructure because shared cloud runners proved too variable for stable comparisons [@curlPerformance; @curlPerf].
+
+::: {.callout-note collapse="true" title="`Nushell` GitHub search"}
+```nu
+gh search code touchstone --filename .Rbuildignore --limit 1000 --json repository |
+  from json |
+  get repository.nameWithOwner |
+  uniq |
+  where $it !~ 'lorenzwalthert|assignUser|VisruthSK' |
+  sort
+```
+:::
+
+## Comparison with adjacent tools
+
+`foil` is directly inspired by `touchstone`, which randomizes the two branches within each block and records the block for every observation [@touchstone]. Its current confidence-interval implementation fits `elapsed ~ branch`, so the recorded pairing and execution order do not enter the fit.
+
+Memory is a second distinction. R allocation counters do not capture all memory used outside R's allocator, including compiled code and child processes. `foil` will measure OS-level peak memory for the benchmark process and its contained descendants. @sec-app-memory defines the platform-specific quantities.
+
+| Tool | Pair modelled | Order/drift handling | Effect uncertainty | Memory | Workload |
+|------------|------------|------------|------------|------------|------------|
+| **`foil`** | **Yes** | **Repetition position and execution order modeled** | **Posterior distribution** | **OS process-tree peak** | **Arbitrary command** |
+| `bench` | No | None | No | R allocations and GC | R expression |
+| `atime` | No | None | No | Asymptotic memory usage (`bench`) | R expression (`bench`)|
+| `cross` | No | None | No | R allocations and GC (`bench`) | R expression (`bench`) |
+| `touchstone` | No | Randomized order, not modeled | **Confidence interval** | No | R expression |
+| `Rperform` | No | None | No | Sampled R-process RSS | R package test files |
+| `tango` | **Yes** | Randomized order, not modeled | Significance test | No | Rust microbenchmark |
+| `zenbench` | **Yes** | Drift diagnosed, not modeled; execution order not modeled | **Confidence interval** | Allocations | Rust microbenchmark |
+| CodSpeed | No | Controlled execution environment | Impact and regression thresholds | Allocations | Supported integrations/CLI |
+| Bencher | No | None | Statistical thresholds and alerts | Varies | Varies |
+
+`touchstone` is the closest R workflow, while `tango` and `zenbench` are the closest paired statistical designs. None of the tools reviewed combines arbitrary command revision comparison, pairing retained in inference, explicit adjustment for repetition position and execution order, effect uncertainty, and OS process-tree peak memory.

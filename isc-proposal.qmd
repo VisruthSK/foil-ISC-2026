@@ -14,5 +14,13 @@ title: "`foil`: paired performance benchmarking for R packages"
 
 {{< include proposal/05-success.qmd >}}
 
-::: refs
+# References {.unnumbered}
+
+::: {#refs}
 :::
+
+{{< include proposal/Appendix-1.qmd >}}
+
+{{< include proposal/Appendix-2.qmd >}}
+
+{{< include proposal/Appendix-3.qmd >}}
