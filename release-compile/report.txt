@@ -1,0 +1,11 @@
+release-compile: Comparing candidate (HEAD) to baseline (main) with 30 paired repetitions and 10000 Bayesian bootstrap draws.
+
+Baseline:  25.7s
+Candidate: 33.3s
+
+Change: +7.7s (+29.90%)
+  50% CrI: [+7.4s, +7.9s] (+28.82%, +30.89%)
+  80% CrI: [+7.2s, +8.1s] (+27.79%, +31.74%)
+  90% CrI: [+7.0s, +8.2s] (+27.12%, +32.25%)
+
+P(candidate faster): 0.0% (0 of 10,000 draws)

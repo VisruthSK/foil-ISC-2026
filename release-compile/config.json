@@ -1,0 +1,53 @@
+{
+  "seed": 6102330218029326996,
+  "repetitions": 30,
+  "block_size": 4,
+  "draws": 10000,
+  "timeout_seconds": 1800,
+  "isolate": false,
+  "shrinkage": 0.0,
+  "intervals": [
+    0.5,
+    0.8,
+    0.9
+  ],
+  "working_directory": null,
+  "foil_version": "0.1.0",
+  "baseline": {
+    "revision": "main",
+    "hash": "bd2775067f85e8accab1044fe5296d940c122745"
+  },
+  "candidate": {
+    "revision": "HEAD",
+    "hash": "ce4b3495d92f4031bcb6c81a00324c13c96df24f"
+  },
+  "suite_lifecycle": {
+    "startup": [],
+    "teardown": []
+  },
+  "worktree_lifecycle": {
+    "startup": [],
+    "teardown": []
+  },
+  "benchmark_lifecycle": {
+    "startup": [
+      "cargo",
+      "fetch",
+      "--locked"
+    ],
+    "startup_each_run": [
+      "cargo",
+      "clean",
+      "--release"
+    ],
+    "teardown_each_run": [],
+    "teardown": []
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline"
+  ]
+}
