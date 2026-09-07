@@ -28,8 +28,8 @@ Who has been given the opportunity to provide feedback on the
 proposal?
 -->
 <!-- TODO: ASK PEOPLE -->
-<!-- ASK TYSON, BODWIN, ROBINSON?, AKI?, FLORENCE, JOSIAH PARRY?, WILL LANDAU, MAX KUHN, STAN PEOPLE? ASK ON NET TOO -->
+<!-- ASK BODWIN, ROBINSON?, JOSIAH PARRY?, MAX KUHN, STAN PEOPLE? ASK ON NET TOO -->
 
-A number of people kindly read the proposal and provided feedback: Jonah Gabry.
+A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari.
 
 `foil` will be trialed in a few Stan packages, beginning with `loo` and expanding as the Stan team evaluates it.
