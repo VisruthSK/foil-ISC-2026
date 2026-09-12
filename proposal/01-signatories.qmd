@@ -30,6 +30,6 @@ proposal?
 <!-- TODO: ASK PEOPLE -->
 <!-- ASK BODWIN, ROBINSON?, JOSIAH PARRY?, MAX KUHN, STAN PEOPLE? ASK ON NET TOO -->
 
-A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari, Toby Hocking.
+A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari, Toby Hocking, Will Landau.
 
 `foil` will be trialed in a few Stan packages, beginning with `loo` and expanding as the Stan team evaluates it.

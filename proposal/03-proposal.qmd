@@ -20,6 +20,8 @@ Include concrete actions you will take and estimated timeline.
 
 `foil` is designed to evaluate whether a change made software slower or more memory-hungry, most naturally by comparing a branch to `main`. `foil` already compares baseline and candidate Git revisions as randomized pairs on the same machine, then models the paired measurements to account for drift and run-order effects and estimate the revision effect with uncertainty. The funded work adds support for measuring memory usage, as well as providing prebuilt binaries and an R package. No existing tool (see @sec-existing-tools) provides the whole workflow required for developers to make effective decisions about performance changes.
 
+Although `foil` uses a Bayesian bootstrap for uncertainty quantification and is developed by a member of the Stan development team, it is not part of the Stan project or limited to Bayesian workflows. It is intended for performance regression testing in R packages and other software.
+
 `foil` will measure process-tree peak memory usage on Linux and Windows (see @sec-app-memory for more details). This will let developers measure memory usage, even if packages use compiled code or parallelization, addressing a gap in existing tooling. `foil` reports the revision effect with uncertainty, ensuring that developers know when results are noisy. For R package developers, the funded work makes this workflow available through R and easier to run locally or in CI without installing a Rust toolchain.
 
 From January through June 2027, the project will deliver Linux memory and the result schema, distribution and R integration, a `loo` case study and work on overhead and model diagnostics, Windows memory, and stable documented releases.
@@ -44,7 +46,7 @@ Memory usage will be measured using OS facilities that track maximum memory usag
 
 ### R integration and distribution
 
-The R package will be released on CRAN and the multiverse. It will locate or help users install a `foil` executable[^1] and provide a minimal R interface to `foil` to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. `foil init r-package` will write a starter `foil.toml`, R benchmark entry point, and GitHub Actions workflow. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.
+The R package will be released on CRAN and the R-multiverse. It will locate or help users install a `foil` executable[^1] and provide a minimal R interface to `foil` to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. `foil init r-package` will write a starter `foil.toml`, R benchmark entry point, and GitHub Actions workflow. The intended workflow is continuous regression testing on commits and pull requests, so performance regressions can be detected soon after they are introduced rather than through occasional manual benchmarking before release. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.
 
 [^1]: Similar to `cmdstanr`'s distribution model, which provides `cmdstanr::install_cmdstan()`.
 
