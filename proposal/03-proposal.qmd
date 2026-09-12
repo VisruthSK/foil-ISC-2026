@@ -44,7 +44,7 @@ Memory usage will be measured using OS facilities that track maximum memory usag
 
 ### R integration and distribution
 
-The R package will be released on CRAN and the multiverse. It will locate or help users install a `foil` executable[^1] and provide a minimal R interface to `foil` to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. `foil init r-package` will write a starter `foil.toml`, R benchmark entry point, and GitHub Actions workflow. 
+The R package will be released on CRAN and the multiverse. It will locate or help users install a `foil` executable[^1] and provide a minimal R interface to `foil` to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. `foil init r-package` will write a starter `foil.toml`, R benchmark entry point, and GitHub Actions workflow. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.
 
 [^1]: Similar to `cmdstanr`'s distribution model, which provides `cmdstanr::install_cmdstan()`.
 

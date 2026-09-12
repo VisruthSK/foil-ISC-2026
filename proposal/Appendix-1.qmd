@@ -8,17 +8,17 @@ An August 19, 2026 GitHub search for `touchstone` in `.Rbuildignore` files retur
 
 ## Comparison with adjacent tools
 
-| Tool | Pair modeled | Order/drift handling | Effect uncertainty | Memory | Workload |
-|------------|------------|------------|------------|------------|------------|
-| **`foil`** | **Yes** | **Drift and run order modeled** | **Posterior distribution** | **OS process-tree peak** | **Arbitrary command** |
-| `bench` | No | None | No | R allocations and GC | R expression |
-| `atime` | No | None | No | Asymptotic memory usage (`bench`) | R expression (`bench`)|
-| `cross` | No | None | No | R allocations and GC (`bench`) | R expression (`bench`) |
-| `touchstone` | No | Randomized order, not modeled | **Confidence interval** | No | R expression |
-| `Rperform` | No | None | No | Sampled R-process RSS | R package test files |
-| `tango` | **Yes** | Randomized order, not modeled | Significance test | No | Rust microbenchmark |
-| `zenbench` | **Yes** | Drift diagnosed, not modeled; execution order not modeled | **Confidence interval** | Allocations | Rust microbenchmark |
-| CodSpeed | No | Controlled execution environment | Impact and regression thresholds | Allocations | Supported integrations/CLI |
-| Bencher | No | None | Statistical thresholds and alerts | Varies | Varies |
+| Tool | Pair modeled | Order/drift handling | Effect uncertainty | Memory | Workload | Asymptotics |
+|------------|------------|------------|------------|------------|------------|------------|
+| **`foil`** | **Yes** | **Drift and run order modeled** | **Posterior distribution** | **OS process-tree peak** | **Arbitrary command** | No |
+| `bench` | No | None | No | R allocations and GC | R expression | No |
+| `atime` | No | None | No | Asymptotic memory usage (`bench`) | R expression (`bench`)| **Yes** |
+| `cross` | No | None | No | R allocations and GC (`bench`) | R expression (`bench`) | No |
+| `touchstone` | No | Randomized order, not modeled | **Confidence interval** | No | R expression | No |
+| `Rperform` | No | None | No | Sampled R-process RSS | R package test files | No |
+| `tango` | **Yes** | Randomized order, not modeled | Significance test | No | Rust microbenchmark | No |
+| `zenbench` | **Yes** | Drift diagnosed, not modeled; execution order not modeled | **Confidence interval** | Allocations | Rust microbenchmark | No |
+| CodSpeed | No | Controlled execution environment | Impact and regression thresholds | Allocations | Supported integrations/CLI | No |
+| Bencher | No | None | Statistical thresholds and alerts | Varies | Varies | No |
 
 `touchstone` is the closest R workflow, while `tango` and `zenbench` are the closest paired statistical designs. None of the tools reviewed combines arbitrary command revision comparison, pairing retained in inference, explicit adjustment for drift and run order, effect uncertainty, and OS process-tree peak memory.
