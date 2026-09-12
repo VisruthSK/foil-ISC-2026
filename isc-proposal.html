@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Visruth Srimath Kandali">
-<meta name="dcterms.date" content="2026-09-07">
+<meta name="dcterms.date" content="2026-09-12">
 
 <title>foil: paired performance benchmarking for R packages</title>
 <style>
@@ -2360,7 +2360,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2026-09-07</p>
+      <p class="date">2026-09-12</p>
     </div>
   </div>
   
@@ -2414,7 +2414,7 @@ proposal?
 -->
 <!-- TODO: ASK PEOPLE -->
 <!-- ASK BODWIN, ROBINSON?, JOSIAH PARRY?, MAX KUHN, STAN PEOPLE? ASK ON NET TOO -->
-<p>A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari.</p>
+<p>A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari, Toby Hocking, Will Landau.</p>
 <p><code>foil</code> will be trialed in a few Stan packages, beginning with <code>loo</code> and expanding as the Stan team evaluates it.</p>
 </section>
 </section>
@@ -2435,8 +2435,8 @@ It is important to cover:
  - [ ] If proposing changes to R itself: letter of support from R Core member
 -->
 <p>Performance regressions can slip past unit tests and harm software, increasing runtime or memory usage. R package developers need a way to estimate how much a change affected performance. However, on most development machines and on CI runners, runtime measurements are noisy enough that distinguishing between normal variation and a real effect can be very challenging. One way to reduce that noise is to measure baseline and candidate revisions on the same machine, which reduces machine-to-machine variation <span class="citation" data-cites="laaberCloud2019">(<a href="#ref-laaberCloud2019" role="doc-biblioref">Laaber et al. 2019</a>)</span>.</p>
-<p>R packages often rely on compiled code or multiprocessing in order to speed up computation, which proves to be a problem for memory measurement; tracking R-level allocations will not capture true memory usage in these kinds of workloads. Reliable revision-level runtime and memory comparisons would let developers detect and investigate these regressions before they reach users, without requiring dedicated benchmarking hardware.</p>
-<p>Existing R tools address parts of this problem: <code>bench</code> measures runtime and R allocation behavior <span class="citation" data-cites="bench">(<a href="#ref-bench" role="doc-biblioref">Hester and Vaughan 2025</a>)</span>, <code>cross</code> runs expressions across package versions or Git branches <span class="citation" data-cites="cross">(<a href="#ref-cross" role="doc-biblioref">Vaughan 2026</a>)</span>, and <code>atime</code> compares time and memory across versions and revisions <span class="citation" data-cites="atime atimePaper">(<a href="#ref-atime" role="doc-biblioref">Hocking 2026</a>; <a href="#ref-atimePaper" role="doc-biblioref">Amoakohene et al. 2026</a>)</span>. <code>touchstone</code> comes closest to a paired revision experiment <span class="citation" data-cites="touchstone">(<a href="#ref-touchstone" role="doc-biblioref">Walthert and Wujciak-Jens 2026</a>)</span>, and is already used in a variety of R packages. None capture process-tree peak memory and support arbitrary benchmark commands (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>).</p>
+<p>R packages often rely on compiled code or multiprocessing in order to speed up computation, which proves to be a problem for memory measurement; tracking R-level allocations will not capture true memory usage in these kinds of workloads. Reliable revision-level runtime and memory comparisons would let developers detect and investigate these regressions before they reach users, without requiring dedicated benchmarking hardware. Most benchmarking tools compare implementations, while profiling tools identify where time or memory is spent. <code>foil</code> instead targets revision-level regression testing: did a code change make runtime or memory usage worse, and how large is the regression?</p>
+<p>Existing R tools address parts of this problem: <code>bench</code> measures runtime and R allocation behavior <span class="citation" data-cites="bench">(<a href="#ref-bench" role="doc-biblioref">Hester and Vaughan 2025</a>)</span>, <code>cross</code> runs expressions across package versions or Git branches <span class="citation" data-cites="cross">(<a href="#ref-cross" role="doc-biblioref">Vaughan 2026</a>)</span>, and <code>atime</code> measures runtime and R-level memory across both package versions and data sizes, making it useful for detecting differences in asymptotic scaling <span class="citation" data-cites="atime atimePaper">(<a href="#ref-atime" role="doc-biblioref">Hocking 2026</a>; <a href="#ref-atimePaper" role="doc-biblioref">Amoakohene et al. 2026</a>)</span>. <code>atime</code> can also compare multiple relevant package versions. <code>touchstone</code>, which compares a base and PR branch, comes closest to a paired revision experiment <span class="citation" data-cites="touchstone">(<a href="#ref-touchstone" role="doc-biblioref">Walthert and Wujciak-Jens 2026</a>)</span> and is already used in a variety of R packages. None of these tools measure process-tree peak memory and support arbitrary benchmark commands (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>).</p>
 </section>
 <section id="the-proposal" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> The proposal</h1>
@@ -2459,6 +2459,7 @@ Include concrete actions you will take and estimated timeline.
 -->
 <!-- TODO: rewrite -->
 <p><code>foil</code> is designed to evaluate whether a change made software slower or more memory-hungry, most naturally by comparing a branch to <code>main</code>. <code>foil</code> already compares baseline and candidate Git revisions as randomized pairs on the same machine, then models the paired measurements to account for drift and run-order effects and estimate the revision effect with uncertainty. The funded work adds support for measuring memory usage, as well as providing prebuilt binaries and an R package. No existing tool (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>) provides the whole workflow required for developers to make effective decisions about performance changes.</p>
+<p>Although <code>foil</code> uses a Bayesian bootstrap for uncertainty quantification and is developed by a member of the Stan development team, it is not part of the Stan project or limited to Bayesian workflows. It is intended for performance regression testing in R packages and other software.</p>
 <p><code>foil</code> will measure process-tree peak memory usage on Linux and Windows (see <a href="#sec-app-memory" class="quarto-xref">Section 8</a> for more details). This will let developers measure memory usage, even if packages use compiled code or parallelization, addressing a gap in existing tooling. <code>foil</code> reports the revision effect with uncertainty, ensuring that developers know when results are noisy. For R package developers, the funded work makes this workflow available through R and easier to run locally or in CI without installing a Rust toolchain.</p>
 <p>From January through June 2027, the project will deliver Linux memory and the result schema, distribution and R integration, a <code>loo</code> case study and work on overhead and model diagnostics, Windows memory, and stable documented releases.</p>
 </section>
@@ -2481,7 +2482,7 @@ Depending on project type the detail section should include:
 </section>
 <section id="r-integration-and-distribution" class="level3" data-number="4.2.3">
 <h3 data-number="4.2.3" class="anchored" data-anchor-id="r-integration-and-distribution"><span class="header-section-number">4.2.3</span> R integration and distribution</h3>
-<p>The R package will be released on CRAN and the multiverse. It will locate or help users install a <code>foil</code> executable<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and provide a minimal R interface to <code>foil</code> to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. <code>foil init r-package</code> will write a starter <code>foil.toml</code>, R benchmark entry point, and GitHub Actions workflow.</p>
+<p>The R package will be released on CRAN and the R-multiverse. It will locate or help users install a <code>foil</code> executable<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and provide a minimal R interface to <code>foil</code> to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. <code>foil init r-package</code> will write a starter <code>foil.toml</code>, R benchmark entry point, and GitHub Actions workflow. The intended workflow is continuous regression testing on commits and pull requests, so performance regressions can be detected soon after they are introduced rather than through occasional manual benchmarking before release. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.</p>
 </section>
 <section id="results" class="level3" data-number="4.2.4">
 <h3 data-number="4.2.4" class="anchored" data-anchor-id="results"><span class="header-section-number">4.2.4</span> Results</h3>
@@ -2751,12 +2752,13 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <h2 data-number="7.2" class="anchored" data-anchor-id="comparison-with-adjacent-tools"><span class="header-section-number">7.2</span> Comparison with adjacent tools</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2766,6 +2768,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <th>Effect uncertainty</th>
 <th>Memory</th>
 <th>Workload</th>
+<th>Asymptotics</th>
 </tr>
 </thead>
 <tbody>
@@ -2776,6 +2779,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td><strong>Posterior distribution</strong></td>
 <td><strong>OS process-tree peak</strong></td>
 <td><strong>Arbitrary command</strong></td>
+<td>No</td>
 </tr>
 <tr class="even">
 <td><code>bench</code></td>
@@ -2784,6 +2788,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>No</td>
 <td>R allocations and GC</td>
 <td>R expression</td>
+<td>No</td>
 </tr>
 <tr class="odd">
 <td><code>atime</code></td>
@@ -2792,6 +2797,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>No</td>
 <td>Asymptotic memory usage (<code>bench</code>)</td>
 <td>R expression (<code>bench</code>)</td>
+<td><strong>Yes</strong></td>
 </tr>
 <tr class="even">
 <td><code>cross</code></td>
@@ -2800,6 +2806,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>No</td>
 <td>R allocations and GC (<code>bench</code>)</td>
 <td>R expression (<code>bench</code>)</td>
+<td>No</td>
 </tr>
 <tr class="odd">
 <td><code>touchstone</code></td>
@@ -2808,6 +2815,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td><strong>Confidence interval</strong></td>
 <td>No</td>
 <td>R expression</td>
+<td>No</td>
 </tr>
 <tr class="even">
 <td><code>Rperform</code></td>
@@ -2816,6 +2824,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>No</td>
 <td>Sampled R-process RSS</td>
 <td>R package test files</td>
+<td>No</td>
 </tr>
 <tr class="odd">
 <td><code>tango</code></td>
@@ -2824,6 +2833,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>Significance test</td>
 <td>No</td>
 <td>Rust microbenchmark</td>
+<td>No</td>
 </tr>
 <tr class="even">
 <td><code>zenbench</code></td>
@@ -2832,6 +2842,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td><strong>Confidence interval</strong></td>
 <td>Allocations</td>
 <td>Rust microbenchmark</td>
+<td>No</td>
 </tr>
 <tr class="odd">
 <td>CodSpeed</td>
@@ -2840,6 +2851,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>Impact and regression thresholds</td>
 <td>Allocations</td>
 <td>Supported integrations/CLI</td>
+<td>No</td>
 </tr>
 <tr class="even">
 <td>Bencher</td>
@@ -2848,6 +2860,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td>Statistical thresholds and alerts</td>
 <td>Varies</td>
 <td>Varies</td>
+<td>No</td>
 </tr>
 </tbody>
 </table>
