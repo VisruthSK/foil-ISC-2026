@@ -10,7 +10,7 @@ An August 19, 2026 GitHub search for `touchstone` in `.Rbuildignore` files retur
 
 | Tool | Pair modeled | Order/drift handling | Effect uncertainty | Memory | Workload | Asymptotics |
 |------------|------------|------------|------------|------------|------------|------------|
-| **`foil`** | **Yes** | **Drift and run order modeled** | **Posterior distribution** | **OS process-tree peak** | **Arbitrary command** | No |
+| **`foil`** | **Yes** | **Drift and run order modeled** | **Effect distribution** | **OS process-tree peak** | **Arbitrary command** | No |
 | `bench` | No | None | No | R allocations and GC | R expression | No |
 | `atime` | No | None | No | Asymptotic memory usage (`bench`) | R expression (`bench`)| **Yes** |
 | `cross` | No | None | No | R allocations and GC (`bench`) | R expression (`bench`) | No |
