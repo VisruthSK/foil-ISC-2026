@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Visruth Srimath Kandali">
-<meta name="dcterms.date" content="2026-09-12">
+<meta name="dcterms.date" content="2026-09-13">
 
 <title>foil: paired performance benchmarking for R packages</title>
 <style>
@@ -2360,7 +2360,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2026-09-12</p>
+      <p class="date">2026-09-13</p>
     </div>
   </div>
   
@@ -2435,7 +2435,7 @@ It is important to cover:
  - [ ] If proposing changes to R itself: letter of support from R Core member
 -->
 <p>Performance regressions can slip past unit tests and harm software, increasing runtime or memory usage. R package developers need a way to estimate how much a change affected performance. However, on most development machines and on CI runners, runtime measurements are noisy enough that distinguishing between normal variation and a real effect can be very challenging. One way to reduce that noise is to measure baseline and candidate revisions on the same machine, which reduces machine-to-machine variation <span class="citation" data-cites="laaberCloud2019">(<a href="#ref-laaberCloud2019" role="doc-biblioref">Laaber et al. 2019</a>)</span>.</p>
-<p>R packages often rely on compiled code or multiprocessing in order to speed up computation, which proves to be a problem for memory measurement; tracking R-level allocations will not capture true memory usage in these kinds of workloads. Reliable revision-level runtime and memory comparisons would let developers detect and investigate these regressions before they reach users, without requiring dedicated benchmarking hardware. Most benchmarking tools compare implementations, while profiling tools identify where time or memory is spent. <code>foil</code> instead targets revision-level regression testing: did a code change make runtime or memory usage worse, and how large is the regression?</p>
+<p>R packages often rely on compiled code or multiprocessing in order to speed up computation, which proves to be a problem for memory measurement; tracking R-level allocations will not capture true memory usage in these kinds of workloads. Reliable revision-level runtime and memory comparisons would let developers detect and investigate these regressions before they reach users, without requiring dedicated benchmarking hardware. Most benchmarking tools compare implementations, while profiling tools identify where time or memory is spent. <code>foil</code> instead targets revision-level regression testing: how did a code change affect runtime or memory usage, and how uncertain is that estimated change?</p>
 <p>Existing R tools address parts of this problem: <code>bench</code> measures runtime and R allocation behavior <span class="citation" data-cites="bench">(<a href="#ref-bench" role="doc-biblioref">Hester and Vaughan 2025</a>)</span>, <code>cross</code> runs expressions across package versions or Git branches <span class="citation" data-cites="cross">(<a href="#ref-cross" role="doc-biblioref">Vaughan 2026</a>)</span>, and <code>atime</code> measures runtime and R-level memory across both package versions and data sizes, making it useful for detecting differences in asymptotic scaling <span class="citation" data-cites="atime atimePaper">(<a href="#ref-atime" role="doc-biblioref">Hocking 2026</a>; <a href="#ref-atimePaper" role="doc-biblioref">Amoakohene et al. 2026</a>)</span>. <code>atime</code> can also compare multiple relevant package versions. <code>touchstone</code>, which compares a base and PR branch, comes closest to a paired revision experiment <span class="citation" data-cites="touchstone">(<a href="#ref-touchstone" role="doc-biblioref">Walthert and Wujciak-Jens 2026</a>)</span> and is already used in a variety of R packages. None of these tools measure process-tree peak memory and support arbitrary benchmark commands (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>).</p>
 </section>
 <section id="the-proposal" class="level1" data-number="4">
@@ -2458,8 +2458,7 @@ section.
 Include concrete actions you will take and estimated timeline.
 -->
 <!-- TODO: rewrite -->
-<p><code>foil</code> is designed to evaluate whether a change made software slower or more memory-hungry, most naturally by comparing a branch to <code>main</code>. <code>foil</code> already compares baseline and candidate Git revisions as randomized pairs on the same machine, then models the paired measurements to account for drift and run-order effects and estimate the revision effect with uncertainty. The funded work adds support for measuring memory usage, as well as providing prebuilt binaries and an R package. No existing tool (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>) provides the whole workflow required for developers to make effective decisions about performance changes.</p>
-<p>Although <code>foil</code> uses a Bayesian bootstrap for uncertainty quantification and is developed by a member of the Stan development team, it is not part of the Stan project or limited to Bayesian workflows. It is intended for performance regression testing in R packages and other software.</p>
+<p><code>foil</code> is designed to evaluate how a change affects runtime or memory usage of software, most naturally by comparing a branch to <code>main</code>. <code>foil</code> already compares baseline and candidate Git revisions as randomized pairs on the same machine, then models the paired measurements to account for drift and run-order effects and estimate the revision effect with uncertainty. The funded work adds support for measuring memory usage, as well as providing prebuilt binaries and an R package. No existing tool (see <a href="#sec-existing-tools" class="quarto-xref">Section 7</a>) provides the whole workflow required for developers to make effective decisions about performance changes.</p>
 <p><code>foil</code> will measure process-tree peak memory usage on Linux and Windows (see <a href="#sec-app-memory" class="quarto-xref">Section 8</a> for more details). This will let developers measure memory usage, even if packages use compiled code or parallelization, addressing a gap in existing tooling. <code>foil</code> reports the revision effect with uncertainty, ensuring that developers know when results are noisy. For R package developers, the funded work makes this workflow available through R and easier to run locally or in CI without installing a Rust toolchain.</p>
 <p>From January through June 2027, the project will deliver Linux memory and the result schema, distribution and R integration, a <code>loo</code> case study and work on overhead and model diagnostics, Windows memory, and stable documented releases.</p>
 </section>
@@ -2482,7 +2481,7 @@ Depending on project type the detail section should include:
 </section>
 <section id="r-integration-and-distribution" class="level3" data-number="4.2.3">
 <h3 data-number="4.2.3" class="anchored" data-anchor-id="r-integration-and-distribution"><span class="header-section-number">4.2.3</span> R integration and distribution</h3>
-<p>The R package will be released on CRAN and the R-multiverse. It will locate or help users install a <code>foil</code> executable<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and provide a minimal R interface to <code>foil</code> to run benchmarks. It will also be able to import measurements and posterior draws for further analysis or visualizations. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. <code>foil init r-package</code> will write a starter <code>foil.toml</code>, R benchmark entry point, and GitHub Actions workflow. The intended workflow is continuous regression testing on commits and pull requests, so performance regressions can be detected soon after they are introduced rather than through occasional manual benchmarking before release. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.</p>
+<p>The R package will be released on CRAN and the R-multiverse. It will locate or help users install a <code>foil</code> executable<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and provide a minimal R interface to <code>foil</code> to run benchmarks. It will also be able to import the raw measurements and uncertainty draws generated by <code>foil</code> for further analysis or visualization. The Rust crate will be published on crates.io; prebuilt binaries and installers will be published through GitHub Releases. <code>foil init r-package</code> will write a starter <code>foil.toml</code>, R benchmark entry point, and GitHub Actions workflow. The intended workflow is continuous regression testing on commits and pull requests, so performance changes can be measured soon after they are introduced rather than through occasional manual benchmarking before release. The integration is repository-level and does not require adding <code>foil</code> or its R package as a dependency of the package being benchmarked. Performance tests are typically distinct from unit tests, and benchmarks should use representative workloads to expose important runtime or memory differences.</p>
 </section>
 <section id="results" class="level3" data-number="4.2.4">
 <h3 data-number="4.2.4" class="anchored" data-anchor-id="results"><span class="header-section-number">4.2.4</span> Results</h3>
@@ -2505,14 +2504,14 @@ P(candidate faster): 0.0% (0 of 10,000 draws)</code></pre>
 <!--
 What is the smallest thing you can build that delivers value to your users?
 -->
-<p>The MVP is a complete Linux workflow for measuring a performance change—including memory—and making the result available in R. A user can install <code>foil</code> without a Rust toolchain, compare two Git revisions locally or in CI, measure runtime and process-tree peak memory, and obtain an adjusted revision effect with uncertainty. The R package can locate or help install a compatible <code>foil</code> executable, run benchmarks, and import the resulting measurements and posterior draws.</p>
+<p>The MVP is a complete Linux workflow for measuring a performance change—including memory—and making the result available in R. A user can install <code>foil</code> without a Rust toolchain, compare two Git revisions locally or in CI, measure runtime and process-tree peak memory, and obtain an adjusted revision effect with uncertainty. The R package can locate or help install a compatible <code>foil</code> executable, run benchmarks, and import the resulting measurements and uncertainty draws.</p>
 </section>
 <section id="architecture" class="level3" data-number="4.2.6">
 <h3 data-number="4.2.6" class="anchored" data-anchor-id="architecture"><span class="header-section-number">4.2.6</span> Architecture</h3>
 <!--
 What does the high-level architecture look like?
 -->
-<p>A Rust CLI owns benchmark orchestration and inference. It resolves configuration and revisions, creates isolated Git worktrees, generates a randomized paired schedule, runs the user-defined benchmark command, and records each observation. Platform-specific backends contain the benchmark process tree and clean up descendants after each run. <code>foil</code> then estimates the revision effect from the paired measurements and uses a Bayesian bootstrap to quantify uncertainty without assuming a parametric error distribution <span class="citation" data-cites="rubinBayesianBootstrap1981">(<a href="#ref-rubinBayesianBootstrap1981" role="doc-biblioref">Rubin 1981</a>)</span>. Results are written in machine-readable form for downstream use. The R package will provide a thin interface over the Rust executable.</p>
+<p>A Rust CLI owns benchmark orchestration and inference. It resolves configuration and revisions, creates isolated Git worktrees, generates a randomized paired schedule, runs the user-defined benchmark command, and records each observation. Platform-specific backends contain the benchmark process tree and clean up descendants after each run. <code>foil</code> then estimates the revision effect from the paired measurements and uses a Bayesian bootstrap to quantify uncertainty without assuming a parametric error distribution <span class="citation" data-cites="rubinBayesianBootstrap1981">(<a href="#ref-rubinBayesianBootstrap1981" role="doc-biblioref">Rubin 1981</a>)</span>. Raw measurements, uncertainty draws, and summary results are written in machine-readable form for downstream use. The R package will provide a thin interface over the Rust executable.</p>
 </section>
 <section id="assumptions" class="level3" data-number="4.2.7">
 <h3 data-number="4.2.7" class="anchored" data-anchor-id="assumptions"><span class="header-section-number">4.2.7</span> Assumptions</h3>
@@ -2776,7 +2775,7 @@ Walthert, Lorenz, and Jacob Wujciak-Jens. 2026. <em><span class="nocase">touchst
 <td><strong><code>foil</code></strong></td>
 <td><strong>Yes</strong></td>
 <td><strong>Drift and run order modeled</strong></td>
-<td><strong>Posterior distribution</strong></td>
+<td><strong>Effect distribution</strong></td>
 <td><strong>OS process-tree peak</strong></td>
 <td><strong>Arbitrary command</strong></td>
 <td>No</td>
