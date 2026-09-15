@@ -32,4 +32,4 @@ proposal?
 
 A number of people kindly read the proposal and provided feedback: Jonah Gabry, Aki Vehtari, Toby Hocking, Will Landau.
 
-`foil` will be trialed in a few Stan packages, beginning with `loo` and expanding as the Stan team evaluates it.
+`foil` will be trialed in a few Stan packages, beginning with `loo` and expanding as the Stan team evaluates it. `foil` will also be trialed in `crew` and `targets`.
